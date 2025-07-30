@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cheer-Up Princess</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #fffde7;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    @keyframes rainbow {
+      0%   { color: red; }
+      20%  { color: gold; }
+      40%  { color: limegreen; }
+      60%  { color: turquoise; }
+      80%  { color: blueviolet; }
+      100% { color: crimson; }
+    }
+
+    h1 {
+      margin-top: 2rem;
+      font-size: 2.5rem;
+      animation: rainbow 3s infinite;
+    }
+
+    #message {
+      margin: 1rem auto;
+      max-width: 600px;
+      font-size: 1.2rem;
+      color: #4a148c;
+    }
+
+    button {
+      margin: 1rem;
+      padding: 1rem 2rem;
+      font-size: 1.2rem;
+      background-color: #40c4ff;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px #00838f;
+      transition: 0.2s;
+      position: relative;
+    }
+
+    button:active {
+      box-shadow: none;
+      transform: translateY(2px);
+    }
+
+    #hug-message,
+    #question,
+    #response {
+      font-size: 1.3rem;
+      color: #ffd600;
+      margin-top: 1rem;
+    }
+
+    #final-message {
+      font-size: 2.5rem;
+      animation: rainbow 2s infinite;
+      text-align: center;
+      margin-top: 30vh;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+    }
+
+    #buttons-container {
+      margin-top: 1rem;
+      position: relative;
+      height: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      width: 100%;
+    }
+
+    .button-wrapper {
+      position: relative;
+    }
+
+    #no-btn {
+      position: absolute;
+      transition: top 0.3s, left 0.3s;
+      top: 0;
+      left: 0;
+    }
+
+    .falling {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      pointer-events: none;
+      animation: fall 5s linear infinite;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-100px) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(110vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .fade-out {
+      animation: fadeOut 2s forwards;
+    }
+
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Hey you 👋</h1>
+  <p id="message">I know you're having a rough day, this might help ;)</p>
+
+  <button onclick="sendHug()">Click here for a hug 🤗</button>
+  <button onclick="sendJoke()">Click for a joke 🐸</button>
+  <button onclick="sendKiss()">Click for a kiss 😘</button>
+
+  <div id="hug-message"></div>
+  <div id="question" style="display:none;">Are you having a better day now? 😊</div>
+
+  <div id="buttons-container" style="display:none;">
+    <div class="button-wrapper">
+      <button onclick="yesAnswer()">Yes 😌</button>
+    </div>
+    <div class="button-wrapper" id="no-wrapper">
+      <button id="no-btn" onclick="noAnswer()">No 🙄</button>
+    </div>
+  </div>
+
+  <div id="response"></div>
+
+  <script>
+    const hugMessages = [
+      "Here's a hug! 🤗",
+      "Another hug incoming 💞",
+      "Squeezing you virtually 💪❤️",
+      "You're too cute not to hug 🥺",
+      "Emergency cuddle unit activated 🚨💓",
+      "Cuddle cannon deployed! 🔫💖"
+    ];
+
+    const jokes = [
+      "Why did the treadmill break up with the runner? It felt like it was going nowhere. 🏃‍♂️💔",
+      "How do runners stay cool? They have fans. 🧊🏃‍♀️",
+      "Why do sprinters eat before races? Fast food. 🍟🏁",
+      "Why was the running shoe so clingy? It couldn’t let go of sole mates. 👟❤️",
+      "What’s a runner’s favorite type of music? Anything with a good beat per minute. 🥁🎶",
+      "Why don’t runners ever get locked out? They always have the key — to pace! 🔑⏱️",
+      "Why don’t programmers like nature? Too many bugs. 🐞🌳",
+      "How do you comfort a JavaScript bug? You console it. 💻😢",
+      "Why did the coder get kicked off the trampoline? He kept throwing exceptions. 🧠💥",
+      "Why do Python devs live longer? They know how to handle exceptions. 🐍❤️",
+      "What’s a programmer’s favorite hangout spot? The Stack Overflow. ☕🌐",
+      "How do functions break up? They stop calling each other. 📵😭",
+      "Why was the array so excited? Because it found its element. 🎉🧩",
+      "Why did the runner bring string to the race? To tie up the score. 🏃‍♂️🎗️",
+      "I run marathons... on Netflix. 🛋️🏅",
+      "What’s a runner’s least favorite app? Hangouts — they prefer Strava. 🏃‍♀️📱",
+      "Why did the sprinter stay home from school? He was out of track. 🏃‍♂️📉",
+      "Why do programmers prefer dark mode? Because light attracts bugs. 🐛💡",
+      "Why did the developer go broke? Because he used up all his cache. 💸💾",
+      "I told my computer I needed a break, and it said: 'Did you mean coffee()?' ☕💻"
+    ];
+
+    function sendHug() {
+      const msg = hugMessages[Math.floor(Math.random() * hugMessages.length)];
+      document.getElementById('hug-message').innerText = msg;
+      showQuestion();
+    }
+
+    function sendJoke() {
+      const msg = jokes[Math.floor(Math.random() * jokes.length)];
+      document.getElementById('hug-message').innerText = msg;
+      showQuestion();
+    }
+
+    const messages = [
+      "One kiss delivered! 💋",
+      "And another one! 😘",
+      "Aaand another! 😚",
+      "I'm getting tired of this, but here goes! 😗",
+      "Sending you a virtual smooch! 😘"
+    ];
+
+    let currentIndex = 0;
+
+    function sendKiss() {
+      document.getElementById('hug-message').innerText = messages[currentIndex];
+      currentIndex = (currentIndex + 1) % messages.length;
+      showQuestion();
+    }
+
+    function showQuestion() {
+      document.getElementById('question').style.display = "block";
+      document.getElementById('buttons-container').style.display = "block";
+    }
+
+    function yesAnswer() {
+      document.body.classList.add("fade-out");
+
+      setTimeout(() => {
+        document.body.innerHTML = `<div id="final-message">My work here is done 😎</div>`;
+        document.body.classList.remove("fade-out");
+        document.body.style.background = "#fce4ec";
+      }, 2000);
+    }
+
+    function noAnswer() {
+      document.getElementById('response').innerText = "Okay fine... EXTRA CUDDLES 🤗🤗🤗🤗🤗💗💗";
+    }
+
+    const noBtn = document.getElementById('no-btn');
+    noBtn.addEventListener('mouseenter', () => {
+      const container = document.getElementById('buttons-container');
+      const containerRect = container.getBoundingClientRect();
+      const btnWidth = noBtn.offsetWidth;
+      const btnHeight = noBtn.offsetHeight;
+
+      const maxLeft = containerRect.width - btnWidth;
+      const maxTop = containerRect.height - btnHeight;
+
+      const newLeft = Math.random() * maxLeft;
+      const newTop = Math.random() * maxTop;
+
+      noBtn.style.left = newLeft + "px";
+      noBtn.style.top = newTop + "px";
+    });
+
+    const imageSources = [
+      "2-removebg-preview.png",
+      "3-removebg-preview.png",
+      "4-removebg-preview.png"
+    ];
+
+    function createFallingImage() {
+      const img = document.createElement("img");
+      img.src = imageSources[Math.floor(Math.random() * imageSources.length)];
+      img.classList.add("falling");
+      img.style.left = Math.random() * 100 + "vw";
+      img.style.animationDuration = 3 + Math.random() * 3 + "s";
+      document.body.appendChild(img);
+      setTimeout(() => img.remove(), 6000);
+    }
+
+    setInterval(createFallingImage, 300);
+  </script>
+
+</body>
+</html>
